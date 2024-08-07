@@ -1,0 +1,1 @@
+from ttH_killer import process_ttH_vars, process_ttH_sideband
