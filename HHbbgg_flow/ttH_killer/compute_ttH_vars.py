@@ -16,17 +16,29 @@ vec.register_awkward()
 parser = argparse.ArgumentParser(
     description='Process the v1 HiggsDNA parquets to add the ttH-killer variables.'
 )
-parser.add_argument('--json', dest='config_json', action='store',
+parser.add_argument('config_json', dest='config_json', action='store',
     help='JSON file that defines how the computations should be performed, including what files to run over.'
+)
+parser.add_argument('--dump', dest='output_dir_path', action='store', default='../../ttH_killer_vars_output',
+    help='Name of the output path in which the processed parquets will be stored.'
+)
+parser.add_argument('-f', '--force', dest='FORCE_RERUN', action='store_true',
+    help='Forces the reprocessing to happen, even if the input config_json is identical to the previous processing.'
+)
+parser.add_argument('-d', '--debug', dest='DEBUG', action='store_true',
+    help='Toggles whether or not to print debugging statements.'
 )
 parser.add_argument('--output_parquet_size', dest='out_pq_size', action='store',
     help='*NOT IMPLEMENTED YET* Specifies the approx. size (in MB) of the output parquets. Useful with large datasets that require multi-processing. Defaults to 1 parquet per sample.'
-)
+)  # Likely using Dask - https://stackoverflow.com/questions/63768642/pandas-df-to-parquet-write-to-multiple-smaller-files
 
 # lpc_redirector = "root://cmseos.fnal.gov/"
 # lxplus_redirector = "root://eosuser.cern.ch/"
 # lxplus_fileprefix = "/eos/cms/store/group/phys_b2g/HHbbgg/HiggsDNA_parquet/v1"
-LPC_FILEPREFIX = "/eos/uscms/store/group/lpcdihiggsboost/tsievert/HiggsDNA_parquet/v1"
+# LPC_FILEPREFIX = "/eos/uscms/store/group/lpcdihiggsboost/tsievert/HiggsDNA_parquet/v1"
+FILEPREFIX = str()
+FORCE_RERUN = False
+DEBUG = False
 
 def add_ttH_vars(sample):
     
@@ -259,37 +271,37 @@ def add_ttH_vars(sample):
         sample['puppiMET_eta'] = [-999 for _ in range(ak.num(sample['event'], axis=0))]
 
 def main():
-    dir_lists = {
-        'Run3_2022preEE': None,
-        'Run3_2022postEE': None
-    }
-    # set of all the preEE and postEE extra directories that don't contain parquet files
-    non_parquet_set = {
-            'json_files', 'resonant_incomplete', 'ReadMe.md~~', 'ReadMe.md~', 'ReadMe.md', 
-            'ReadMe_m.swp', 'ReadMe_m.swn', 'ReadMe_m.swm', 'ReadMe_m.swo', '.ReadMe.md.swp', '.ReadMe.md.swx',
-            'completed_samples.json'
-    }
+    """
+    Runs the script to compute the ttH-Killer variables
+    """
+    args = parser.parse_args()
+    # Logic for config_json argument
+    config = check_config_json(args.config_json)
+    # Global vars setting
+    FILEPREFIX = config['file_prefix']
+    FORCE_RERUN = args.FORCE_RERUN
+    DEBUG = args.DEBUG
+    # Logic for output_dir_path argument
+    output_dir_path = args.output_dir_path
+    if not os.path.exists(output_dir_path):
+        os.mkdir(output_dir_path)
+    out_pq_size = args.out_pq_size
+
+    dir_lists = {data_era: list() for data_era in config['data_eras']}
     
     for data_era in dir_lists.keys():
-        if os.path.exists(LPC_FILEPREFIX+'/'+data_era+'/completed_samples.json'):
-            with open(LPC_FILEPREFIX+'/'+data_era+'/completed_samples.json', 'r') as f:
-                run_samples = json.load(f)
-        else:
-            run_samples = {
-                'run_samples_list': []
-            }
-        dont_merge_set = non_parquet_set | set(run_samples['run_samples_list'])
+        run_samples = []
+        if os.path.exists(FILEPREFIX+'/'+data_era+'/processing_output.json'):
+            with open(FILEPREFIX+'/'+data_era+'/processing_output.json', 'r') as f:
+                processing_output = json.load(f)
+            if processing_output['config_json'] == config and not FORCE_RERUN:
+                run_samples = processing_output['run_samples']
         
-        output = os.listdir(
-            LPC_FILEPREFIX+'/'+data_era
+        dir_lists[data_era] = list(
+            (
+                set(config["samples"]) & set(os.listdir(FILEPREFIX+'/'+data_era))
+            ) - set(run_samples)
         )
-        
-        output_set = set(output)
-        output_set -= dont_merge_set
-        
-        dir_lists[data_era] = list(output_set)
-        # dir_lists[data_era] = list(run_set)
-        
 
     # MC Era: total era luminosity [fb^-1] #
     luminosities = {'Run3_2022preEE': 7.9804, 'Run3_2022postEE': 26.6717}
@@ -326,7 +338,7 @@ def main():
             for sample_type in ['nominal']: # Eventually change to os.listdir(LPC_FILEPREFIX+'/'+data_era+'/'+dir_name)
                 # Load all the parquets of a single sample into an ak array
                 sample = ak.concatenate(
-                    [ak.from_parquet(LPC_FILEPREFIX+'/'+data_era+'/'+dir_name+'/'+sample_type+'/'+file) for file in os.listdir(LPC_FILEPREFIX+'/'+data_era+'/'+dir_name+'/'+sample_type+'/')]
+                    [ak.from_parquet(FILEPREFIX+'/'+data_era+'/'+dir_name+'/'+sample_type+'/'+file) for file in os.listdir(FILEPREFIX+'/'+data_era+'/'+dir_name+'/'+sample_type+'/')]
                 )
                 add_ttH_vars(sample)
         
@@ -334,7 +346,7 @@ def main():
                     # Compute the sum of genWeights for proper MC rescaling.
                     sample['sumGenWeights'] = sum(
                         float(pq.read_table(file).schema.metadata[b'sum_genw_presel']) for file in glob.glob(
-                            LPC_FILEPREFIX+'/'+data_era+'/'+dir_name+'/'+sample_type+'/*'
+                            FILEPREFIX+'/'+data_era+'/'+dir_name+'/'+sample_type+'/*'
                         )
                     )
         
@@ -348,19 +360,37 @@ def main():
                     # Define eventWeight array for hist plotting.
                     sample['eventWeight'] = ak.where(sample['genWeight'] < 0, -1, 1) * (sample['luminosity'] * sample['cross_section'] / sample['sumGenWeights'])
         
-                destdir = LPC_FILEPREFIX+'/'+data_era+'_merged/'+dir_name+'/'+sample_type+'/'
-                if not os.path.exists(destdir):
-                    os.makedirs(destdir)
-                merged_parquet = ak.to_parquet(sample, destdir+dir_name+'_'+sample_type+'.parquet')
+                destdir = output_dir_path + ('/' if output_dir_path[-1] != '/' else '')
+                processed_parquet = ak.to_parquet(sample, destdir+dir_name+'_'+sample_type+'.parquet')
                 
                 del sample
-                print('======================== \n', dir_name)
-                run_samples['run_samples_list'].append(dir_name)
-                with open(LPC_FILEPREFIX+'/'+data_era+'/completed_samples.json', 'w') as f:
-                     json.dump(run_samples, f)
+                if DEBUG:
+                    print('======================== \n', dir_name)
+                run_samples.append(dir_name)
+                with open(FILEPREFIX+'/'+data_era+'/processing_output.json', 'w') as f:
+                    processing_output = {
+                        'run_samples': run_samples,
+                        'config_json': config
+                    }
+                    json.dump(processing_output, f)
+
+def check_config_json(config_json):
+    if not os.path.exists(config_json):
+        print("You provided a JSON filename, but the path doesn't exist. Maybe you mistyped the path?")
+        raise SystemExit(1)
+    with open(config_json, 'r') as f:
+        config = json.load(f)
+
+    minimal_config_json = {
+        "data_eras", "samples", "file_prefix"
+        # Should we require they specify variables to compute? or we can assume all if not passed
+    }
+    if set(config.keys()) < minimal_config_json:
+        print(f"You provided a valid JSON filepath, however its missing some of the required keys: \n{minimal_config_json - set(config.keys())}")
+        raise SystemExit(1)
+    elif set(config.keys()) > minimal_config_json:
+        print(f"WARNING: You provided a valid JSON file, however it contains some extra (unused) keys: \n{set(config.keys()) - minimal_config_json}")
+
+    return config
 
 
-if __name__ == '__main__':
-    args = parser.parse_args()
-    # Add logic for parsing args #
-    main()
