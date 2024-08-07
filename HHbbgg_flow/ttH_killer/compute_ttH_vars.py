@@ -20,7 +20,7 @@ parser.add_argument('--json', dest='config_json', action='store',
     help='JSON file that defines how the computations should be performed, including what files to run over.'
 )
 parser.add_argument('--output_parquet_size', dest='out_pq_size', action='store',
-    help='Specifies the approx. size (in MB) of the output parquets. Useful with large datasets that require multi-processing. Defaults to 1 parquet per sample.'
+    help='*NOT IMPLEMENTED YET* Specifies the approx. size (in MB) of the output parquets. Useful with large datasets that require multi-processing. Defaults to 1 parquet per sample.'
 )
 
 # lpc_redirector = "root://cmseos.fnal.gov/"
