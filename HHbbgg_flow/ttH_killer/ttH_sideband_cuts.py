@@ -82,7 +82,7 @@ def main():
     # Logic for output_dir_path argument
     output_dir_path = args.output_dir_path
     if not os.path.exists(output_dir_path):
-        os.mkdir(output_dir_path)
+        os.makedirs(output_dir_path)
     out_pq_size = args.out_pq_size
 
     dir_lists = {data_era: list() for data_era in config['data_eras']}
