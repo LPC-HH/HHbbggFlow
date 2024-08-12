@@ -1,25 +1,10 @@
 import argparse
-import glob
 import json
-import math
 import os
 from pathlib import Path
 import re
-import sys
-import subprocess
 
 import awkward as ak
-import duckdb
-import hist
-import numpy as np
-import pyarrow.parquet as pq
-import vector as vec
-vec.register_awkward()
-
-import matplotlib.pyplot as plt
-import mplhep as hep
-plt.style.use(hep.style.CMS)
-plt.rcParams.update({'font.size': 20})
 
 # LPC_FILEPREFIX = "/eos/uscms/store/group/lpcdihiggsboost/tsievert/HiggsDNA_parquet/v1"
 FILEPREFIX = str()

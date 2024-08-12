@@ -1,0 +1,42 @@
+#### Requirements file for the neccessary packages to run the HHbbgg_flow analysis module. ###
+# Note: If running in a conda env, first run `conda install pip`. Then run `pip install -r requirements.txt`. 
+
+## General python packages ##
+jupyterlab ~= 4.0
+matplotlib ~= 3.8
+numpy ~= 1.23
+pandas ~= 2.2
+
+## HPC packages ##
+cuda-python ~= 11.8  # which version depends on the system. currently LPC is 11.8
+# dask ~= 2024.1
+# numba ~= 0.58
+
+## Extra file format packages ##
+# h5py ~= 3.11
+# pyyaml  # YAML1.1
+ruamel.yaml  # YAML1.2
+
+
+## HEP packages ##
+awkward >= 1.10
+coffea ~= 0.7
+uproot ~= 4.3  # I/O package for casting ROOT objects into Numpy files
+# pyroot  # full C++ ROOT bindings
+
+## HEP plotting packages ##
+hist ~= 2.7
+mplhep ~= 0.3
+
+## ttH Killer packages ##
+pyarrow ~= 14.0
+vector ~= 1.1
+
+## ML packages ##
+--extra-index-url https://download.pytorch.org/whl/cu118
+torch
+torchvision
+torchaudio
+scikit-learn ~= 1.4
+scikit-optimize >= 0.10
+xgboost ~= 1.5
