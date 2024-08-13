@@ -1,8 +1,7 @@
 import argparse
-import os
 from pathlib import Path
 
-from ttH_killer import process_ttH_vars, process_ttH_sideband
+import HHbbgg_flow
 
 def main(
     ttH_vars_bool: bool = False, ttH_vars_config: dict = None, 
@@ -10,9 +9,9 @@ def main(
     out_pq_size: float = 0
 ):
     if ttH_vars_bool:
-        process_ttH_vars(ttH_vars_config, out_pq_size)
+        HHbbgg_flow.ttH_killer.process_ttH_vars(ttH_vars_config, out_pq_size)
     elif tth_sideband_bool:
-        process_ttH_sideband(ttH_sideband_config, out_pq_size)
+        HHbbgg_flow.ttH_killer.process_ttH_sideband(ttH_sideband_config, out_pq_size)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -47,5 +46,3 @@ if __name__ == '__main__':
         args.tth_sideband_bool, args.ttH_sideband_config, 
         args.out_pq_size
     )
-
-
