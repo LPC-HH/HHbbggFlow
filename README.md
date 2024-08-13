@@ -60,7 +60,7 @@ conda env create -n HHbbgg -f full-package-list.txt
 
 the conda env can become pretty large (multiple GB), so you may want to specify an installation location in the above step with
 ```
-conda env create -f environment.yml -p <path to install conda env>
+conda env create -n HHbbgg -f full-package-list.txt -p <path to install conda env>
 ```
 
 then activate the environment with
