@@ -1,6 +1,10 @@
 # HHbbggFlow
 This repo provides the centralized location for the HHbbgg analysis framework. This repo was developed and is maintained by the Fermilab-Purdue-Caltech collaboration.
 
+#### ML Training Statement:
+All ML models were trained using identical Train(+Validation) / Test splitting to avoid any potential data leakages.
+The models are trained on Monte Carlo simulations, using only the *odd* event numbers. The models are tested on *even* event numbers.
+
 The installation procedure consists of the following steps:
 ## 1. Clone this repository
 ```
@@ -83,5 +87,4 @@ import HHbbgg_flow as hbg
 
 hbg.analysis_runner(**kwargs)
 ```
-
 
