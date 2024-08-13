@@ -1,8 +1,8 @@
 import argparse
-import os
+import os, sys
 from pathlib import Path
-
-from ttH_killer import process_ttH_vars, process_ttH_sideband
+sys.path.insert(1, os.getcwd())
+from HHbbgg_flow.ttH_killer import process_ttH_vars, process_ttH_sideband
 
 def main(
     ttH_vars_bool: bool = False, ttH_vars_config: dict = None, 
@@ -44,7 +44,7 @@ if __name__ == '__main__':
 
     main(
         args.ttH_vars_bool, args.ttH_vars_config, 
-        args.tth_sideband_bool, args.ttH_sideband_config, 
+        args.ttH_sideband_bool, args.ttH_sideband_config, 
         args.out_pq_size
     )
 
