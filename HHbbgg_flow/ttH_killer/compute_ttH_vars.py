@@ -5,17 +5,12 @@ import math
 import os
 from pathlib import Path
 import re
-import sys
-import subprocess
 
 import awkward as ak
-import duckdb
 import pyarrow.parquet as pq
 import vector as vec
 vec.register_awkward()
 
-# lpc_redirector = "root://cmseos.fnal.gov/"
-# lxplus_redirector = "root://eosuser.cern.ch/"
 # lxplus_fileprefix = "/eos/cms/store/group/phys_b2g/HHbbgg/HiggsDNA_parquet/v1"
 # LPC_FILEPREFIX = "/eos/uscms/store/group/lpcdihiggsboost/tsievert/HiggsDNA_parquet/v1"
 FILEPREFIX = str()
