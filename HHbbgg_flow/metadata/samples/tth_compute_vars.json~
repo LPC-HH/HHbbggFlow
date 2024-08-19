@@ -1,0 +1,19 @@
+{
+    "data_eras" : {
+	"Run3_2022preEE" : {
+	    "lumi" : "7.9804",
+	    "file_prefix" : "/eos/uscms/store/group/lpcdihiggsboost/tsievert/HiggsDNA_parquet/v1",
+	    "samples" : {
+		"ttHToGG" : {
+		    "xs" : 506.5,
+		    "bf" : 0.00228,
+		    "files" : {
+			"nominal" : [
+			    
+			]
+		    }
+		}
+	    }
+	}
+    }
+}

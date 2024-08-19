@@ -5,7 +5,7 @@ import math
 import os
 from pathlib import Path
 import re
-
+from HHbbgg_flow.utils.misc_utils import load_config
 import awkward as ak
 import pyarrow.parquet as pq
 import vector as vec
@@ -14,7 +14,7 @@ vec.register_awkward()
 # lxplus_fileprefix = "/eos/cms/store/group/phys_b2g/HHbbgg/HiggsDNA_parquet/v1"
 # LPC_FILEPREFIX = "/eos/uscms/store/group/lpcdihiggsboost/tsievert/HiggsDNA_parquet/v1"
 FILEPREFIX = str()
-OUTPUT_DIRPATH = f'{str(Path().absolute())}/../../ttH_killer_vars_output'
+OUTPUT_DIRPATH = f'{str(Path().absolute())}/ttH_killer_vars_output'
 FORCE_RERUN = False
 DEBUG = False
 
@@ -248,97 +248,49 @@ def add_ttH_vars(sample):
     if 'puppiMET_eta' not in set(sample.fields):
         sample['puppiMET_eta'] = [-999 for _ in range(ak.num(sample['event'], axis=0))]
 
-def main(config: dict, out_pq_size: float):
+def main(config: dict, out_pq_size: float, outdir=OUTPUT_DIRPATH):
     """
     Runs the script to compute the ttH-Killer variables
     """
-    dir_lists = {data_era: list() for data_era in config['data_eras']}
+    check_config_json(config)
+    config = load_config(config)
+    data_eras = config.get('data_eras', {})
     
-    for data_era in dir_lists.keys():
-        run_samples = []
-        if os.path.exists(FILEPREFIX+'/'+data_era+'/processing_output.json'):
-            with open(FILEPREFIX+'/'+data_era+'/processing_output.json', 'r') as f:
-                processing_output = json.load(f)
-            if processing_output['config_json'] == config and not FORCE_RERUN:
-                run_samples = processing_output['run_samples']
-        
-        dir_lists[data_era] = list(
-            (
-                set(config["samples"]) & set(os.listdir(FILEPREFIX+'/'+data_era))
-            ) - set(run_samples)
-        )
-
-    # MC Era: total era luminosity [fb^-1] #
-    luminosities = {'Run3_2022preEE': 7.9804, 'Run3_2022postEE': 26.6717}
-    
-    # Name: cross section [fb] @ sqrrt{s}=13.6 TeV & m_H=125.09 GeV #
-    #   -> Do we not need to care about other HH processes? https://arxiv.org/pdf/1910.00012.pdf
-    cross_sections = {
-        # https://twiki.cern.ch/twiki/bin/view/LHCPhysics/LHCHWGHH?redirectedfrom=LHCPhysics.LHCHXSWGHH#Current_recommendations_for_HH_c
-        'GluGluToHH': 34.43*0.0026,
-        # https://xsdb-temp.app.cern.ch/xsdb/?columns=37748736&currentPage=0&pageSize=10&searchQuery=DAS%3DGG-Box-3Jets_MGG-80_13p6TeV_sherpa
-        'GGJets': 88750, 
-        # https://xsdb-temp.app.cern.ch/xsdb/?columns=37748736&currentPage=0&pageSize=10&searchQuery=DAS%3DGJet_PT-20to40_DoubleEMEnriched_MGG-80_TuneCP5_13p6TeV_pythia8
-        'GJetPt20To40': 242500, 
-        # https://xsdb-temp.app.cern.ch/xsdb/?columns=37748736&currentPage=0&pageSize=10&searchQuery=DAS%3DGJet_PT-40_DoubleEMEnriched_MGG-80_TuneCP5_13p6TeV_pythia8
-        'GJetPt40': 919100, 
-        # https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt13TeV#gluon_gluon_Fusion_Process
-        'GluGluHToGG': 48520*0.00228,
-        # https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt13TeV#ttH_Process
-        'ttHToGG': 506.5*0.00228,
-        # https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt13TeV#VBF_Process
-        'VBFHToGG': 3779*0.00228,
-        # https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt13TeV#WH_Process + https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt13TeV#ZH_Process
-        'VHToGG': (1369 + 882.4)*0.00228,
-    }
-    for data_era in dir_lists.keys():
-        for dir_name in dir_lists[data_era]:
-            if dir_name in cross_sections or re.match('Data', dir_name) is not None:
-                continue
-            cross_sections[dir_name] = 0.001 # set to 1e-3 [fb] for now, need to find actual numbers for many of these samples
-
-
-    for data_era, dir_list in dir_lists.items():
-        for dir_name in dir_list:
+    for era,era_details in data_eras.items():
+        for sample_name in era_details["samples"].keys():
             for sample_type in ['nominal']: # Eventually change to os.listdir(LPC_FILEPREFIX+'/'+data_era+'/'+dir_name)
                 # Load all the parquets of a single sample into an ak array
                 sample = ak.concatenate(
-                    [ak.from_parquet(FILEPREFIX+'/'+data_era+'/'+dir_name+'/'+sample_type+'/'+file) for file in os.listdir(FILEPREFIX+'/'+data_era+'/'+dir_name+'/'+sample_type+'/')]
+                    [ak.from_parquet(era_details['file_prefix']+'/'+era+'/'+sample_name+'/'+sample_type+'/'+file) for file in os.listdir(era_details['file_prefix']+'/'+era+'/'+sample_name+'/'+sample_type+'/')]
                 )
                 add_ttH_vars(sample)
         
-                if re.match('Data', dir_name) is None:
+                if re.match('Data', sample_name) is None:
                     # Compute the sum of genWeights for proper MC rescaling.
                     sample['sumGenWeights'] = sum(
                         float(pq.read_table(file).schema.metadata[b'sum_genw_presel']) for file in glob.glob(
-                            FILEPREFIX+'/'+data_era+'/'+dir_name+'/'+sample_type+'/*'
+                            era_details['file_prefix']+'/'+era+'/'+sample_name+'/'+sample_type+'/*'
                         )
                     )
-        
                     # Store luminostity computed from https://twiki.cern.ch/twiki/bin/viewauth/CMS/PdmVRun3Analysis
                     #   and summing over lumis of the same type (e.g. all 22EE era lumis summed).
-                    sample['luminosity'] = luminosities[data_era]
+                    sample['luminosity'] = era_details["lumi"]
             
                     # If the process has a defined cross section, use defined xs otherwise use 1e-3 [fb] for now.
-                    sample['cross_section'] = cross_sections[dir_name]
+                    sample['cross_section'] = era_details["samples"][sample_name]["xs"]*era_details["samples"][sample_name]["bf"]
         
                     # Define eventWeight array for hist plotting.
                     sample['eventWeight'] = ak.where(sample['genWeight'] < 0, -1, 1) * (sample['luminosity'] * sample['cross_section'] / sample['sumGenWeights'])
-        
-                destdir = OUTPUT_DIRPATH + ('/' if OUTPUT_DIRPATH[-1] != '/' else '')
-                processed_parquet = ak.to_parquet(sample, destdir+dir_name+'_'+sample_type+'.parquet')
+
+                destdir = outdir + ('/' if outdir[-1] != '/' else '')
+                if not os.path.exists(destdir):
+                    # If it doesn't exist, create it
+                    os.makedirs(destdir)
+                    print(f"Directory '{destdir}' created.")
+                processed_parquet = ak.to_parquet(sample, destdir+era+'_'+sample_type+'.parquet')
                 
                 del sample
-                if DEBUG:
-                    print('======================== \n', dir_name)
-                run_samples.append(dir_name)
-                with open(FILEPREFIX+'/'+data_era+'/processing_output.json', 'w') as f:
-                    processing_output = {
-                        'run_samples': run_samples,
-                        'config_json': config
-                    }
-                    json.dump(processing_output, f)
-
+                
 def check_config_json(config_json):
     if not os.path.exists(config_json):
         print("You provided a JSON filename, but the path doesn't exist. Maybe you mistyped the path?")
@@ -347,7 +299,7 @@ def check_config_json(config_json):
         config = json.load(f)
 
     minimal_config_json = {
-        "data_eras", "samples", "file_prefix"
+        "data_eras"
         # Should we require they specify variables to compute? or we can assume all if not passed
     }
     if set(config.keys()) < minimal_config_json:
@@ -357,38 +309,3 @@ def check_config_json(config_json):
         print(f"WARNING: You provided a valid JSON file, however it contains some extra (unused) keys: \n{set(config.keys()) - minimal_config_json}")
 
     return config
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description='Process the v1 HiggsDNA parquets to add the ttH-killer variables.'
-    )
-    parser.add_argument('config_json', dest='config_json', action='store',
-        help='JSON file that defines how the computations should be performed, including what files to run over.'
-    )
-    parser.add_argument('--dump', dest='output_dir_path', action='store', default=f'{str(Path().absolute())}/../../ttH_killer_vars_output',
-        help='Name of the output path in which the processed parquets will be stored.'
-    )
-    parser.add_argument('-f', '--force', dest='FORCE_RERUN', action='store_true',
-        help='Forces the reprocessing to happen, even if the input config_json is identical to the previous processing.'
-    )
-    parser.add_argument('-d', '--debug', dest='DEBUG', action='store_true',
-        help='Toggles whether or not to print debugging statements.'
-    )
-    parser.add_argument('--output_parquet_size', dest='out_pq_size', action='store',
-        help='*NOT IMPLEMENTED YET* Specifies the approx. size (in MB) of the output parquets. Useful with large datasets that require multi-processing. Defaults to 1 parquet per sample.'
-    )  # Likely using Dask - https://stackoverflow.com/questions/63768642/pandas-df-to-parquet-write-to-multiple-smaller-files
-
-    args = parser.parse_args()
-    # Logic for config_json argument
-    config = check_config_json(args.config_json)
-    # Global vars setting
-    FILEPREFIX = config['file_prefix']
-    FORCE_RERUN = args.FORCE_RERUN
-    DEBUG = args.DEBUG
-    # Logic for output_dir_path argument
-    OUTPUT_DIRPATH = args.output_dir_path
-    if not os.path.exists(OUTPUT_DIRPATH):
-        os.makedirs(OUTPUT_DIRPATH)
-    out_pq_size = args.out_pq_size
-
-    main(config, out_pq_size)
