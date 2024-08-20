@@ -261,7 +261,7 @@ def main(config: dict, out_pq_size: float, outdir=OUTPUT_DIRPATH):
             for sample_type in ['nominal']: # Eventually change to os.listdir(LPC_FILEPREFIX+'/'+data_era+'/'+dir_name)
                 # Load all the parquets of a single sample into an ak array
                 sample = ak.concatenate(
-                    [ak.from_parquet(era_details['file_prefix']+'/'+era+'/'+sample_name+'/'+sample_type+'/'+file) for file in os.listdir(era_details['file_prefix']+'/'+era+'/'+sample_name+'/'+sample_type+'/')]
+                    [ak.from_parquet(era_details['file_prefix']+'/'+era+'/'+sample_name+'/'+sample_type+'/'+file) for file in era_details["samples"][sample_name]['files'][sample_type]]
                 )
                 add_ttH_vars(sample)
         

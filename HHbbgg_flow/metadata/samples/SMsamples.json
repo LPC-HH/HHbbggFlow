@@ -1,12 +1,12 @@
 {
     "data_eras" : {
         "Run3_2022postEE" : {
-            "lumi" : "26.6717",
+            "lumi" : 26.6717,
             "file_prefix" : "/eos/uscms/store/group/lpcdihiggsboost/tsievert/HiggsDNA_parquet/v1",
             "samples" : {
                 "ttHToGG" : {
-                    "xs" : 506.5,,
-                    "bf" : 0.00228,,
+                    "xs" : 506.5,
+                    "bf" : 0.00228,
                     "files" : {
                         "nominal" : [
                             "0d264dfc-666d-11ee-aef7-0166210abeef_%2FEvents%3B1_0-2625.parquet",
@@ -35,8 +35,8 @@
                     }
                 },
                 "Data_EraF" : {
-                    "xs" : 1,,
-                    "bf" : 1,,
+                    "xs" : 1,
+                    "bf" : 1,
                     "files" : {
                         "nominal" : [
                             "00748c22-5c72-11ee-a58d-4ea9935abeef_%2FEvents%3B1_0-444825.parquet",
@@ -1215,8 +1215,8 @@
                     }
                 },
                 "Data_EraE" : {
-                    "xs" : 1,,
-                    "bf" : 1,,
+                    "xs" : 1,
+                    "bf" : 1,
                     "files" : {
                         "nominal" : [
                             "01259496-59a1-11ee-82ef-e70c0d0abeef_%2FEvents%3B1_0-686299.parquet",
@@ -1538,8 +1538,8 @@
                     }
                 },
                 "GGJets" : {
-                    "xs" : 88750,,
-                    "bf" : 1,,
+                    "xs" : 88750,
+                    "bf" : 1,
                     "files" : {
                         "nominal" : [
                             "074cc1a8-67e5-11ee-876e-76e65d9fbeef_%2FEvents%3B1_0-3520.parquet",
@@ -1569,8 +1569,8 @@
                     }
                 },
                 "GluGluToHH" : {
-                    "xs" : 34.43,,
-                    "bf" : 0.00265,,
+                    "xs" : 34.43,
+                    "bf" : 0.00265,
                     "files" : {
                         "nominal" : [
                             "0dee5b9e-b41f-11ee-9e8f-3a828e80beef_%2FEvents%3B1_0-16170.parquet",
@@ -1624,8 +1624,8 @@
                     }
                 },
                 "VBFHToGG" : {
-                    "xs" : 3779,,
-                    "bf" : 0.00228,,
+                    "xs" : 3779,
+                    "bf" : 0.00228,
                     "files" : {
                         "nominal" : [
                             "093cd90a-6432-11ee-98a2-03041cacbeef_%2FEvents%3B1_0-4500.parquet",
@@ -1675,8 +1675,8 @@
                     }
                 },
                 "GJetPt40" : {
-                    "xs" : 919100,,
-                    "bf" : 1,,
+                    "xs" : 919100,
+                    "bf" : 1,
                     "files" : {
                         "nominal" : [
                             "015f7ac2-684b-11ee-ae32-6a00640abeef_%2FEvents%3B1_0-12570.parquet",
@@ -1787,8 +1787,8 @@
                     }
                 },
                 "GJetPt20To40" : {
-                    "xs" : 242500,,
-                    "bf" : 1,,
+                    "xs" : 242500,
+                    "bf" : 1,
                     "files" : {
                         "nominal" : [
                             "01be4832-62a5-11ee-bc5e-ea0b030abeef_%2FEvents%3B1_0-572411.parquet",
@@ -1878,8 +1878,8 @@
                     }
                 },
                 "VHToGG" : {
-                    "xs" : 2251.4,,
-                    "bf" : 0.00228,,
+                    "xs" : 2251.4,
+                    "bf" : 0.00228,
                     "files" : {
                         "nominal" : [
                             "1af4d2b4-6785-11ee-a786-e982e4a9beef_%2FEvents%3B1_0-174953.parquet",
@@ -1905,8 +1905,8 @@
                     }
                 },
                 "GluGluHToGG" : {
-                    "xs" : 48520,,
-                    "bf" : 0.00228,,
+                    "xs" : 48520,
+                    "bf" : 0.00228,
                     "files" : {
                         "nominal" : [
                             "1090d40a-6bac-11ee-9b83-17bde183beef_%2FEvents%3B1_0-524063.parquet",
@@ -1942,12 +1942,12 @@
             }
         },
         "Run3_2022preEE" : {
-            "lumi" : "7.9804,",
+            "lumi" : 7.9804,
             "file_prefix" : "/eos/uscms/store/group/lpcdihiggsboost/tsievert/HiggsDNA_parquet/v1",
             "samples" : {
                 "ttHToGG" : {
-                    "xs" : 506.5,,
-                    "bf" : 0.00228,,
+                    "xs" : 506.5,
+                    "bf" : 0.00228,
                     "files" : {
                         "nominal" : [
                             "04c47ace-65bb-11ee-8a4d-08041cacbeef_%2FEvents%3B1_0-681.parquet",
@@ -1972,8 +1972,8 @@
                     }
                 },
                 "Data_EraC" : {
-                    "xs" : 1,,
-                    "bf" : 1,,
+                    "xs" : 1,
+                    "bf" : 1,
                     "files" : {
                         "nominal" : [
                             "00e817e8-5b4e-11ee-b3ed-f5090d0abeef_%2FEvents%3B1_0-429229.parquet",
@@ -2534,8 +2534,8 @@
                     }
                 },
                 "Data_EraD" : {
-                    "xs" : 1,,
-                    "bf" : 1,,
+                    "xs" : 1,
+                    "bf" : 1,
                     "files" : {
                         "nominal" : [
                             "00ab4456-59c5-11ee-9048-78bfe183beef_%2FEvents%3B1_0-487058.parquet",
@@ -2741,8 +2741,8 @@
                     }
                 },
                 "GGJets" : {
-                    "xs" : 88750,,
-                    "bf" : 1,,
+                    "xs" : 88750,
+                    "bf" : 1,
                     "files" : {
                         "nominal" : [
                             "03d80306-6796-11ee-acba-e9803c0abeef_%2FEvents%3B1_0-14360.parquet",
@@ -2824,8 +2824,8 @@
                     }
                 },
                 "GluGluToHH" : {
-                    "xs" : 34.43,,
-                    "bf" : 0.00265,,
+                    "xs" : 34.43,
+                    "bf" : 0.00265,
                     "files" : {
                         "nominal" : [
                             "014efa5a-ae9e-11ee-bcd9-309110acbeef_%2FEvents%3B1_0-396.parquet",
@@ -2864,8 +2864,8 @@
                     }
                 },
                 "VBFHToGG" : {
-                    "xs" : 3779,,
-                    "bf" : 0.00228,,
+                    "xs" : 3779,
+                    "bf" : 0.00228,
                     "files" : {
                         "nominal" : [
                             "537182be-beff-11ee-9780-2a94d380beef_%2FEvents%3B1_0-127400.parquet",
@@ -2887,8 +2887,8 @@
                     }
                 },
                 "GJetPt40" : {
-                    "xs" : 919100,,
-                    "bf" : 1,,
+                    "xs" : 919100,
+                    "bf" : 1,
                     "files" : {
                         "nominal" : [
                             "031403ac-621e-11ee-84a3-792411acbeef_%2FEvents%3B1_0-237669.parquet",
@@ -2940,8 +2940,8 @@
                     }
                 },
                 "GJetPt20To40" : {
-                    "xs" : 242500,,
-                    "bf" : 1,,
+                    "xs" : 242500,
+                    "bf" : 1,
                     "files" : {
                         "nominal" : [
                             "007e0a42-62ec-11ee-bcea-43c49a83beef_%2FEvents%3B1_0-5107.parquet",
@@ -2990,8 +2990,8 @@
                     }
                 },
                 "VHToGG" : {
-                    "xs" : 2251.4,,
-                    "bf" : 0.00228,,
+                    "xs" : 2251.4,
+                    "bf" : 0.00228,
                     "files" : {
                         "nominal" : [
                             "05d4221e-644b-11ee-ad0b-bcd19a83beef_%2FEvents%3B1_0-9904.parquet",
@@ -3016,8 +3016,8 @@
                     }
                 },
                 "GluGluHToGG" : {
-                    "xs" : 48520,,
-                    "bf" : 0.00228,,
+                    "xs" : 48520,
+                    "bf" : 0.00228,
                     "files" : {
                         "nominal" : [
                             "151be936-6785-11ee-8234-c8c210acbeef_%2FEvents%3B1_0-25102.parquet",
