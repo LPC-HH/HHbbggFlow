@@ -30,7 +30,7 @@ if __name__ == '__main__':
     parser.add_argument('--output_parquet_size', dest='out_pq_size', required=False, action='store', default = 0,
             help='*NOT IMPLEMENTED YET* Specifies the approx. size (in MB) of the output parquets. Useful with large datasets that require multi-processing. Defaults to 1 parquet per sample.'
         )  # Likely using Dask - https://stackoverflow.com/questions/63768642/pandas-df-to-parquet-write-to-multiple-smaller-files
-    parser.add_argument('--dump', dest='output_dir_path', action='store', default=f'{str(Path().absolute())}/../../analysis_output',
+    parser.add_argument('--outdir', dest='output_dir_path', action='store', default=f'{str(Path().absolute())}/analysis_output',
         help='Name of the output path in which the analysis output will be stored.'
     )
     parser.add_argument('-d', '--debug', dest='DEBUG', action='store_true',
