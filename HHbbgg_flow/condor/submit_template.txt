@@ -1,0 +1,15 @@
+universe = vanilla
+should_transfer_files = Yes
++SingularityImage = "/cvmfs/unpacked.cern.ch/registry.hub.docker.com/coffeateam/coffea-dask:latest"
+
+transfer_input_files    = GRID_PROXY, XRD_ANALYSIS_TARFILE, CONFIG_FILE, PYTHON_FILE
+executable = EXECUTABLE
+output = OUTPUT
+error = ERROR
+log = LOG
+
+RequestMemory = REQ_MEMORY
+RequestDisk = REQ_DISK
+RequestCpus = REQ_NCPUS
+
+queue 1
